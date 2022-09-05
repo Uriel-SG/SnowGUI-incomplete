@@ -55,14 +55,14 @@ def snow_gui():
 						subprocess.run(f"snow -C -m {secret_message} {container} {newfile}")
 						done()
 					else:
-						subprocess.run(f"snow -C -m {secret_message} -p {password} {container} {newfile}")
+						subprocess.run(f'snow -C -m {secret_message} -p "{password}" {container} {newfile}')
 						done()
 				else:
 					if password == "":
 						subprocess.run(f"snow -m {secret_message} {container} {newfile}")
 						done()
 					else:
-						subprocess.run(f"snow -m {secret_message} -p {password} {container} {newfile}")
+						subprocess.run(f'snow -m {secret_message} -p "{password}" {container} {newfile}')
 						done()
 			
 			def select_container():
@@ -165,7 +165,7 @@ def snow_gui():
 			password = ""
 			compression = False
 			
-			def extract():
+			def extract2():
 				global file_path
 				global password
 				global compression
@@ -174,21 +174,28 @@ def snow_gui():
 					compression = True
 				if compression == True:
 						if password == "":
-							subprocess.run(f"snow -C {file_path}")
+							subprocess.run(f"snow -C {file_path} > extracted.txt")
 						else:
-							subprocess.run(f"snow -C -p {password} {file_path}")
+							subprocess.run(f'snow -C -p "{password}" {file_path} > extracted.txt')
 				else:
 					if password == "":
-						subprocess.run(f"snow {file_path}")
+						subprocess.run(f"snow {file_path} > extracted.txt")
 					else:
-						subprocess.run(f"snow -p {password} {file_path}")
+						subprocess.run(f'snow -p "{password}" {file_path} > extracted.txt')
+						
+				with open("extracted.txt", "r") as secret:
+					message = secret.read()
+					showtext["state"] = "normal"
+					showtext.insert("tk.END", message)
+					showtext["state"] = "disabled"
 			
 			def open():
 				global file_path
 				file_path = fd.askopenfilename(
 					title='Testo Contenitore:  ',
-					initialdir='/storage/emulated/0',
-					filetypes=("text", "*.txt"))
+					initialdir='/storage/emulated/0', 
+					filetypes=(("text", "*.txt"), ("all", ".*"))
+					)
 				opened["text"] = file_path
 			
 			def principal():
@@ -222,7 +229,7 @@ def snow_gui():
 			compression_check.pack()
 			showtext = tk.Text(state="disabled", font=("Times", 14), height=7)
 			showtext.pack()
-			extractbutt = ttk.Button(text="Estrai", command=extract)
+			extractbutt = ttk.Button(text="Estrai", command=extract2)
 			extractbutt.pack()
 			cleanbutt = ttk.Button(text="Pulisci", command=refresh)
 			cleanbutt.pack(side=tk.LEFT)
